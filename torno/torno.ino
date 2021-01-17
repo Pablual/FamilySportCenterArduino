@@ -1,3 +1,10 @@
+#include <Boards.h>
+#include <Firmata.h>
+#include <FirmataConstants.h>
+#include <FirmataDefines.h>
+#include <FirmataMarshaller.h>
+#include <FirmataParser.h>
+
 #include <SPI.h>
 #include <Wire.h>
 #include <Ethernet.h>
@@ -30,8 +37,8 @@ byte mac[] = {
 };
 IPAddress localIP(192, 168, 1, 102);
 unsigned int localPort = 8888;      // local port to listen on
-IPAddress remoteIP(192, 168, 1, 101);
-unsigned int remotePort = 6000;      // local port to listen on
+IPAddress remoteIP(192, 168, 1, 106);
+unsigned int remotePort = 11000;      // local port to listen on
 EthernetUDP Udp;
 char packetBuffer[UDP_TX_PACKET_MAX_SIZE];  // buffer to hold incoming packet,
 char ReplyBuffer[] = "ACK";        // a string to send back
@@ -49,6 +56,7 @@ void setup() {
   pinMode(LEFT, OUTPUT);
   pinMode(RIGHT, OUTPUT);
   pinMode(NONE, OUTPUT);
+  digitalWrite(NONE, HIGH);
   // start the Ethernet connection and the server:
   Ethernet.begin(mac, localIP);
     // Check for Ethernet hardware present
@@ -63,6 +71,8 @@ void setup() {
   Udp.begin(localPort);
   SerialInfo.println("TORNO HABILITADO");
   nfc.startPassiveTargetIDDetection(PN532_MIFARE_ISO14443A);
+
+  // prueba();
 }
 
 
@@ -86,6 +96,8 @@ void loop() {
       SerialInfo.print("  UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
       SerialInfo.print("  UID Value: ");
       nfc.PrintHex(uid, uidLength);
+
+      SerialInfo.print("Length: ");SerialInfo.println(uidLength);
       
       if (uidLength == 4)
       {
@@ -97,8 +109,12 @@ void loop() {
         cardid <<= 8;
         cardid |= uid[3]; 
         SerialInfo.print("Seems to be a Mifare Classic card #");
+
+        // harcodeamos el codigo a 1001 para probar.
+        cardid = 1001;
         SerialInfo.println(cardid);
         Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
+        
         cardidstr = String(cardid);
         cardidstr.toCharArray(CardBuffer,UDP_TX_PACKET_MAX_SIZE);
         Udp.write(CardBuffer);
@@ -111,4 +127,5 @@ void loop() {
   }
   delay(10);  
   receiveUDP();
+ 
 }

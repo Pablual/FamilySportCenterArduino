@@ -33,16 +33,20 @@ void receiveUDP(void){
     delay(3000);
     digitalWrite(dir, HIGH);     
   }
-  if( dir == NONE)
+  if ( dir == NONE)
   {
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < 2; i++)
     {
         SerialInfo.println("INVALID CARD");
-        digitalWrite(NONE, LOW);
+        digitalWrite(LEFT, HIGH);    
+        digitalWrite(RIGHT, HIGH); 
         delay(500);
-        digitalWrite(NONE, HIGH);
+        digitalWrite(LEFT, LOW);    
+        digitalWrite(RIGHT, LOW); 
         delay(500);
     }
+     digitalWrite(LEFT, HIGH);    
+     digitalWrite(RIGHT, HIGH); 
   }
     Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
     Udp.write(ReplyBuffer);
