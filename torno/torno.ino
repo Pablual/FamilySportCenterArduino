@@ -36,9 +36,9 @@ byte mac[] = {
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
 IPAddress localIP(192, 168, 1, 102);
-unsigned int localPort = 8888;      // local port to listen on
-IPAddress remoteIP(192, 168, 1, 106);
-unsigned int remotePort = 11000;      // local port to listen on
+unsigned int localPort = 8080;      // local port to listen on
+IPAddress remoteIP(192, 168, 1, 103);
+unsigned int remotePort = 11000;     // local port to listen on
 EthernetUDP Udp;
 char packetBuffer[UDP_TX_PACKET_MAX_SIZE];  // buffer to hold incoming packet,
 char ReplyBuffer[] = "ACK";        // a string to send back
@@ -55,8 +55,9 @@ void setup() {
   }  
   pinMode(LEFT, OUTPUT);
   pinMode(RIGHT, OUTPUT);
-  pinMode(NONE, OUTPUT);
-  digitalWrite(NONE, HIGH);
+  //pinMode(NONE, OUTPUT);
+  digitalWrite(LEFT, HIGH);
+  digitalWrite(RIGHT, HIGH);
   // start the Ethernet connection and the server:
   Ethernet.begin(mac, localIP);
     // Check for Ethernet hardware present
@@ -81,7 +82,7 @@ void loop() {
     nfc.startPassiveTargetIDDetection(PN532_MIFARE_ISO14443A);
     if (millis() - lastread > timeout) {
       readerDisabled = false;
-      SerialInfo.println("Waiting for Card...");
+      //SerialInfo.println("Waiting for Card...");
     }
   }
   else{
@@ -111,9 +112,10 @@ void loop() {
         SerialInfo.print("Seems to be a Mifare Classic card #");
 
         // harcodeamos el codigo a 1001 para probar.
-        cardid = 1001;
+        cardid = 1006;
         SerialInfo.println(cardid);
-        Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
+        SerialInfo.print(remoteIP);
+        Udp.beginPacket(remoteIP,remotePort);
         
         cardidstr = String(cardid);
         cardidstr.toCharArray(CardBuffer,UDP_TX_PACKET_MAX_SIZE);
@@ -123,7 +125,6 @@ void loop() {
       Serial.println("");
     }
     lastread = millis();
-    readerDisabled = true;
   }
   delay(10);  
   receiveUDP();
