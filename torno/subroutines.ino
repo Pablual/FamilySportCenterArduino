@@ -2,10 +2,9 @@ void receiveUDP(void){
   int dir = 0;
   int packetSize = Udp.parsePacket();
   if (packetSize == 3) {
+    readerDisabled = true;
     // read the packet into packetBufffer
     Udp.read(packetBuffer, packetSize);
-    remoteIP = Udp.remoteIP();
-    remotePort = Udp.remotePort();
     SerialInfo.print("Received ");
     SerialInfo.print(packetBuffer);
     SerialInfo.print(" from:");
@@ -48,8 +47,8 @@ void receiveUDP(void){
      digitalWrite(LEFT, HIGH);    
      digitalWrite(RIGHT, HIGH); 
   }
-    Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
-    Udp.write(ReplyBuffer);
-    Udp.endPacket();
+    //Udp.beginPacket(remoteIP, remotePort);
+    //Udp.write(ReplyBuffer);
+    //Udp.endPacket();
   }
 }
