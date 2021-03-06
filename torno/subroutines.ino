@@ -1,5 +1,6 @@
 void receiveUDP(void){
   int dir = 0;
+  
   int packetSize = Udp.parsePacket();
   if (packetSize == 3) {
     readerDisabled = true;
@@ -23,32 +24,30 @@ void receiveUDP(void){
       dir = RIGHT;
     }
     if(strcmp(packetBuffer,"NON")==0){
+      SerialInfo.println("Invalida card");
       dir = NONE;
+    }
+    if(strcmp(packetBuffer,"BTH")==0){
+      dir = BTH;
     }
   if( dir == LEFT || dir == RIGHT)
   {
     SerialInfo.println("OPEN");
     digitalWrite(dir, LOW); 
     delay(3000);
-    digitalWrite(dir, HIGH);     
   }
-  if ( dir == NONE)
+  if ( dir == BTH)
   {
-    for(int i = 0; i < 2; i++)
-    {
-        SerialInfo.println("INVALID CARD");
-        digitalWrite(LEFT, HIGH);    
-        digitalWrite(RIGHT, HIGH); 
-        delay(500);
-        digitalWrite(LEFT, LOW);    
-        digitalWrite(RIGHT, LOW); 
-        delay(500);
-    }
+      SerialInfo.println("OPEN CARD");
+      digitalWrite(LEFT, LOW);    
+      digitalWrite(RIGHT, LOW); 
+      delay(3000);
+  }
      digitalWrite(LEFT, HIGH);    
      digitalWrite(RIGHT, HIGH); 
-  }
     //Udp.beginPacket(remoteIP, remotePort);
     //Udp.write(ReplyBuffer);
     //Udp.endPacket();
+   //readerDisabled = false;
   }
 }

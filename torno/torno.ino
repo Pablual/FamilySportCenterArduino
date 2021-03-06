@@ -14,6 +14,7 @@
 #define LEFT 7
 #define RIGHT 8
 #define NONE 9
+#define BTH 10
 
 #define PN532_IRQ   (2)
 #define PN532_RESET (3)
@@ -71,6 +72,7 @@ void setup() {
   // start UDP
   Udp.begin(localPort);
   SerialInfo.println("TORNO HABILITADO");
+  
   nfc.startPassiveTargetIDDetection(PN532_MIFARE_ISO14443A);
 
   // prueba();
@@ -78,55 +80,9 @@ void setup() {
 
 
 void loop() {
-  if (readerDisabled) {
-    nfc.startPassiveTargetIDDetection(PN532_MIFARE_ISO14443A);
-    if (millis() - lastread > timeout) {
-      readerDisabled = false;
-      //SerialInfo.println("Waiting for Card...");
-    }
-  }
-  else{
-    uint8_t success = false;
-    uint8_t uid[] = { 0, 0, 0, 0, 0, 0, 0 };  // Buffer to store the returned UID
-    uint8_t uidLength;                        // Length of the UID (4 or 7 bytes depending on ISO14443A card type)
-    String cardidstr;
-    success = nfc.readDetectedPassiveTargetID(uid, &uidLength);
-    if (success) {
-      // Display some basic information about the card
-      SerialInfo.println("Found an ISO14443A card");
-      SerialInfo.print("  UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
-      SerialInfo.print("  UID Value: ");
-      nfc.PrintHex(uid, uidLength);
-
-      SerialInfo.print("Length: ");SerialInfo.println(uidLength);
-      
-      if (uidLength == 4)
-      {
-        uint32_t cardid = uid[0];
-        cardid <<= 8;
-        cardid |= uid[1];
-        cardid <<= 8;
-        cardid |= uid[2];  
-        cardid <<= 8;
-        cardid |= uid[3]; 
-        SerialInfo.print("Seems to be a Mifare Classic card #");
-
-        // harcodeamos el codigo a 1001 para probar.
-        cardid = 1006;
-        SerialInfo.println(cardid);
-        SerialInfo.print(remoteIP);
-        Udp.beginPacket(remoteIP,remotePort);
-        
-        cardidstr = String(cardid);
-        cardidstr.toCharArray(CardBuffer,UDP_TX_PACKET_MAX_SIZE);
-        Udp.write(CardBuffer);
-        Udp.endPacket();
-      }
-      Serial.println("");
-    }
-    lastread = millis();
-  }
+  lectorNFC();
   delay(10);  
   receiveUDP();
+  Serial.println("tralari");
  
 }
