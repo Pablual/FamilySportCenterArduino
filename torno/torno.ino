@@ -11,8 +11,8 @@
 #include <EthernetUdp.h>
 #include <Adafruit_PN532.h>
 
-#define LEFT 7
-#define RIGHT 8
+#define LEFT 8
+#define RIGHT 7
 #define NONE 9
 #define BTH 10
 
@@ -36,9 +36,12 @@ Adafruit_PN532 nfc(PN532_IRQ, PN532_RESET);
 byte mac[] = {
   0xDE, 0xAD, 0xBE, 0xEF, 0xFE, 0xED
 };
+
+byte ip[] = {192, 168, 6, 131};
 IPAddress localIP(192, 168, 1, 102);
 unsigned int localPort = 8080;      // local port to listen on
-IPAddress remoteIP(192, 168, 1, 103);
+// IPAddress remoteIP(192, 168, 1, 103); 192.168.1.70
+IPAddress remoteIP(192, 168, 1, 42);
 unsigned int remotePort = 11000;     // local port to listen on
 EthernetUDP Udp;
 char packetBuffer[UDP_TX_PACKET_MAX_SIZE];  // buffer to hold incoming packet,
@@ -47,6 +50,7 @@ char CardBuffer[UDP_TX_PACKET_MAX_SIZE];        // a string to send back
 
 void setup() {
   Serial.begin(115200);  
+  
   nfc.begin();
   nfc.SAMConfig(); 
   uint32_t versiondata = nfc.getFirmwareVersion();
@@ -74,7 +78,7 @@ void setup() {
   SerialInfo.println("TORNO HABILITADO");
   
   nfc.startPassiveTargetIDDetection(PN532_MIFARE_ISO14443A);
-
+  Serial.println(Ethernet.localIP());
   // prueba();
 }
 
@@ -83,6 +87,5 @@ void loop() {
   lectorNFC();
   delay(10);  
   receiveUDP();
-  Serial.println("tralari");
  
 }

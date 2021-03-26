@@ -17,7 +17,7 @@ void lectorNFC(){
       
       // codigoAntiguo()
       // lector del bloque 4
-       success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength);  
+       success = nfc.readPassiveTargetID(PN532_MIFARE_ISO14443A, uid, &uidLength, 500);  
       if (success) {
           Serial.println("Intentando autentificar bloque 4 con clave KEYA");
           uint8_t keya[6] = { 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
@@ -29,8 +29,7 @@ void lectorNFC(){
           {
             Serial.println("Sector 1 (Bloques 4 a 7) autentificados");
             uint8_t data[16];
-            
-           // memcpy(data, (const uint8_t[]){ 'l', 'u', 'i', 's', 'l', 'l', 'a', 'm', 'a', 's', '.', 'e', 's', 0, 0, 0 }, sizeof data);
+           
            // OJO, para escribir success = nfc.mifareclassic_WriteDataBlock (4, data);
 
             nfc.mifareclassic_ReadDataBlock(4, data);
